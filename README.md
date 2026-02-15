@@ -1,0 +1,2 @@
+# AI-supported-Survival-Prediction-from-Multichannel-Microscopy-Images-of-Cancer-Tissue
+This project aims to investigate whether multichannel multiplexed immunofluorescence (mIF) microscopy images can be used to predict survival of lung cancer patients. The focus is on capturing patterns in the tumor microenvironment (TME)—not just at a single-cell level, but also including global spatial context across tissue.
