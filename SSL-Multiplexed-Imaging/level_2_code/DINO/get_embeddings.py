@@ -50,7 +50,14 @@ def main(args):
     embeddings = []
     filenames = []
     with torch.no_grad():
-        for img, fnames, _ in tqdm(dataloader):
+        for batch in tqdm(dataloader):
+            # unpack (views, fnames, idx) or (views, fnames)
+            if len(batch) == 3:
+                views, fnames, _ = batch
+            else:
+                views, fnames = batch
+            
+            img = views[0] if isinstance(views, (list, tuple)) else views
             img = img.to(model.device)
             emb = model.student_backbone(img).flatten(start_dim=1).cpu()
             embeddings.append(emb)
