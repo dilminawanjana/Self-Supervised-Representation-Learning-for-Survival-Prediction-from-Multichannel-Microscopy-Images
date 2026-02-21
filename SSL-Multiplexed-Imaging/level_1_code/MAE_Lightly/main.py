@@ -1,6 +1,3 @@
-# Note: The model and training settings do not follow the reference settings
-# from the paper. The settings are chosen such that the example can easily be
-# run on a small dataset with a single GPU.
 import os
 from pathlib import Path
 import numpy as np
@@ -13,7 +10,7 @@ from torch import nn
 from lightly.data import LightlyDataset
 from lightly.models import utils
 from lightly.models.modules import masked_autoencoder
-from lightly.transforms.mae_transform import MAETransform
+# from lightly.transforms.mae_transform import MAETransform
 
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -156,17 +153,22 @@ def main(args):
     
 
 
-    if os.environ.get("WANDB_API_KEY"):
-        wandb.login()
-    else:
-        print("WANDB_API_KEY not set; wandb will run in offline/disabled mode.")
+    wandb_mode = os.environ.get("WANDB_MODE", "online")
+    if not os.environ.get("WANDB_API_KEY"):
+        # safest default on HPC when no key is provided
+        wandb_mode = "disabled"
+    
+    os.environ["WANDB_MODE"] = wandb_mode
+    print(f"W&B mode: {wandb_mode}")
 
-    wandb_logger = WandbLogger(
-        project=args.wandb_project_name,
-        name=args.wandb_name,
-        log_model=False,
-        save_dir=args.output_dir
-    )
+    wandb_logger = None
+    if os.environ.get("WANDB_MODE")!= "disabled":
+        wandb_logger = WandbLogger(
+            project=args.wandb_project_name,
+            name=args.wandb_name,
+            log_model=False,
+            save_dir=args.output_dir
+        )
     
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.output_dir,
@@ -181,8 +183,8 @@ def main(args):
                          num_nodes=args.n_nodes,
                          devices=args.n_devices, 
                          accelerator="gpu", 
-                        #  strategy="ddp",
-                        # strategy='ddp_find_unused_parameters_true',
+                         strategy="ddp",
+                         # strategy='ddp_find_unused_parameters_true',
                          use_distributed_sampler=True,
                          logger=wandb_logger,
                          default_root_dir=args.output_dir,
@@ -199,7 +201,7 @@ def parse_arguments():
     parser.add_argument('--wandb_project_name', type=str, default='')
     parser.add_argument('--wandb_name', type=str, default='')
     
-    parser.add_argument('--num_workers', type=int, default=0, help='Number of workers for data loading (default: 0)')
+    parser.add_argument('--num_workers', type=int, default=7, help='Number of workers for data loading (default: 7)')
     parser.add_argument('--seed', type=int, default=1, help='Seed for random number generation (default: 1)')
     
     parser.add_argument('--input_size', type=int, default=224, help='Input size (default: 256)')
