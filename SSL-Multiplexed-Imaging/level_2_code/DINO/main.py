@@ -3,6 +3,7 @@
 # run on a small dataset with a single GPU.
 
 import copy
+import os
 from pathlib import Path
 
 import pytorch_lightning as pl
@@ -144,17 +145,26 @@ def main(args):
         dataset,
         batch_size=args.batch_size,
         shuffle=True,
-        drop_last=False, ######should be true
+        drop_last=True, 
         num_workers=args.num_workers,
     )
     
-    print("Logged in to wandb: ", wandb.login(key=''))
+    wandb_mode = os.environ.get("WANDB_MODE", "online")
+    if not os.environ.get("WANDB_API_KEY"):
+        # safest default on HPC when no key is provided
+        wandb_mode = "disabled"
+    
+    os.environ["WANDB_MODE"] = wandb_mode
+    print(f"W&B mode: {wandb_mode}")
 
-    wandb_logger = WandbLogger(project=args.wandb_project_name,
-                               name=args.wandb_name,
-                               save_dir=args.output_dir,
-                               log_model=False,
-                               )
+    wandb_logger = None
+    if os.environ.get("WANDB_MODE")!= "disabled":
+        wandb_logger = WandbLogger(
+            project=args.wandb_project_name,
+            name=args.wandb_name,
+            log_model=False,
+            save_dir=args.output_dir
+        )
 
     model = DINO(args)
     
@@ -169,12 +179,15 @@ def main(args):
     # Train with DDP and use Synchronized Batch Norm for a more accurate batch norm
     # calculation. Distributed sampling is also enabled with replace_sampler_ddp=True.
     trainer = pl.Trainer(max_epochs=args.max_epochs,
-                         accelerator="gpu", 
-                         sync_batchnorm=True,
+                         accelerator="gpu",
+                         devices=args.n_devices,
+                         num_nodes=args.n_nodes,
+                         strategy="ddp" if (args.n_devices > 1 or args.n_nodes > 1) else "auto",
+                         sync_batchnorm=(args.n_devices > 1 or args.n_nodes > 1),
                          logger=wandb_logger,
                          default_root_dir=args.output_dir,
                          callbacks=[checkpoint_callback],
-                         accumulate_grad_batches=10
+                         accumulate_grad_batches=args.accumulate_grad_batches
                          )
     
     trainer.fit(model=model, train_dataloaders=dataloader)
@@ -203,6 +216,7 @@ def parse_arguments():
     
     parser.add_argument('--path_embeddings', type=Path, default='')
     parser.add_argument('--path_names', type=Path, default='')
+    parser.add_argument('--accumulate_grad_batches', type=int, default=4)
     
     return parser.parse_args()
 
