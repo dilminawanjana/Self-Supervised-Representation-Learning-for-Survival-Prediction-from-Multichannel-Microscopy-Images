@@ -35,8 +35,8 @@ class PatchEmbed(nn.Module):
         self.patch_size = patch_size
         self.num_patches = num_patches
 
-        # self.proj = nn.Conv1d(768, embed_dim, kernel_size=patch_size, stride=patch_size)
-        self.proj = nn.Conv2d(args.n_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
+        self.proj = nn.Conv1d(768, embed_dim, kernel_size=patch_size, stride=patch_size)
+        # self.proj = nn.Conv2d(args.n_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
 
     def forward(self, x):
         # B, C, HW = x.shape
@@ -48,12 +48,12 @@ class DINO(pl.LightningModule):
         super().__init__()
         self.lr = args.lr
         self.momentum = args.momentum
-        self.hidden_dim = 512
+        #self.hidden_dim = 512
+        #self.bottleneck_dim = 256
+        #self.output_dim = 2048
+        self.hidden_dim = 2048
         self.bottleneck_dim = 256
-        self.output_dim = 2048
-        # self.hidden_dim = 2048
-        # self.bottleneck_dim = 256
-        # self.output_dim = 65536
+        self.output_dim = 65536
         self.warmup_epoch = 10
         
         self.save_hyperparameters()
@@ -64,15 +64,15 @@ class DINO(pl.LightningModule):
         input_dim = backbone.embed_dim
 
         self.student_backbone = backbone
-        # self.student_head = DINOProjectionHead(
-        #     input_dim, 512, 64, 2048, freeze_last_layer=1
-        # )
         self.student_head = DINOProjectionHead(
-            input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim, freeze_last_layer=1
-        )
+             input_dim, 512, 64, 2048, freeze_last_layer=1
+         )
+        # self.student_head = DINOProjectionHead(
+         #   input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim, freeze_last_layer=1
+        #)
         self.teacher_backbone = copy.deepcopy(backbone)
-        # self.teacher_head = DINOProjectionHead(input_dim, 512, 64, 2048)
-        self.teacher_head = DINOProjectionHead(input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim)
+        self.teacher_head = DINOProjectionHead(input_dim, 512, 64, 2048)
+        # self.teacher_head = DINOProjectionHead(input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim)
         deactivate_requires_grad(self.teacher_backbone)
         deactivate_requires_grad(self.teacher_head)
 
