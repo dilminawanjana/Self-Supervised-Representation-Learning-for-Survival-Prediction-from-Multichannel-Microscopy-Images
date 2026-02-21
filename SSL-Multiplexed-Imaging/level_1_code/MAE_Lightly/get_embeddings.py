@@ -53,7 +53,13 @@ def get_embeddings(args, weightp):
     embeddings = []
     filenames = []
     with torch.no_grad():
-        for img, fnames, _ in tqdm(dataloader):
+        for batch in tqdm(dataloader):
+            if len(batch) == 3:
+                views, fnames, _ = batch
+            else:
+                views, fnames = batch
+                
+            img = views[0] if isinstance(views, (list, tuple)) else views
             img = img.to(model.device)
             emb = model.backbone(img).flatten(start_dim=1)
             embeddings.append(emb.cpu())
@@ -97,7 +103,7 @@ def parse_arguments():
     parser.add_argument('--data_path', type=str, default="")
     
     parser.add_argument('--checkpoint_path', type=str, default="", help='Path to the checkpoint')
-    parser.add_argument('--save_dir', type=Path, default="", help='Path to the checkpoint')
+    parser.add_argument('--save_dir', type=Path, default="embeddings_mae", help='Path to the checkpoint')
     
     return parser.parse_args()
 
