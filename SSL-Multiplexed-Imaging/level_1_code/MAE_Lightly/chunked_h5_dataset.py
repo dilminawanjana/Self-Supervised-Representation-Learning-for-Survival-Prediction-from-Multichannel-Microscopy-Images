@@ -81,14 +81,13 @@ class h5_chunk_wrapper(Dataset):
     
 
 BOMI_meanstds = {  
-                                'DAPI' : [0.864308, 0.577803],
-                                'CD4': [0.709685, 0.767798],
-                                'CD20': [0.105369, 0.379986],
-                                'CD8': [0.172058, 0.348507],
-                                'FoxP3': [0.140908, 0.174657],
-                                'CD45RO': [0.368375, 0.360702],
-                                'PanCK': [1.403302, 0.985561],
-                                'Autofluorescence': [1.473905, 0.489961]
+                                'DAPI' : [0.739118, 0.546747],
+                                'CD4': [0.392819, 0.663878],
+                                'CD20': [0.059158, 0.275279],
+                                'CD8': [0.121200, 0.299337],
+                                'FoxP3': [0.104232, 0.176990],
+                                'PanCK': [0.894238, 1.004463],
+                                'Autofluorescence': [1.152428, 0.565964]
 
                                 }
 
@@ -99,7 +98,6 @@ BOMI_CHANNEL_NAMES = [
     "CD20",
     "CD8",
     "FoxP3",
-    "CD45RO",
     "PanCK",
     "Autofluorescence",
 ]
@@ -110,7 +108,7 @@ BOMI_CHANNEL_NAMES = [
 def get_mean_std(args=None):
     channel_names = [
         "DAPI", "CD4", "CD20", "CD8",
-        "FoxP3", "CD45RO", "PanCK", "Autofluorescence"
+        "FoxP3", "PanCK", "Autofluorescence"
     ]
 
     ds_mean = np.array([BOMI_meanstds[k][0] for k in channel_names], dtype=np.float32)
@@ -118,5 +116,5 @@ def get_mean_std(args=None):
 
     return {"mean": ds_mean, "std": ds_std}, len(channel_names)
 
-mean_std, nC = get_mean_std()
-print("n_channels:", nC, "mean shape:", mean_std["mean"].shape)
+# mean_std, nC = get_mean_std()
+# print("n_channels:", nC, "mean shape:", mean_std["mean"].shape)
