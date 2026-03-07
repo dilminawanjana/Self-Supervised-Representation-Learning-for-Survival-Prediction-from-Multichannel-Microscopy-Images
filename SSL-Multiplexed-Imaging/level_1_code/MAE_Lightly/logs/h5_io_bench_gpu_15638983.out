@@ -1,0 +1,15 @@
+Loaded dataset length: 89430
+Warmup 1/2  elapsed=5.98s
+Warmup 2/2  elapsed=6.06s
+[10/50] elapsed=9.30s  rate=137.7 samples/s
+[20/50] elapsed=21.90s  rate=116.9 samples/s
+[30/50] elapsed=30.67s  rate=125.2 samples/s
+[40/50] elapsed=42.05s  rate=121.8 samples/s
+[50/50] elapsed=50.31s  rate=127.2 samples/s
+
+=== DataLoader Benchmark ===
+Warmup: 2 batches -> 6.065s
+Timed:  50 batches -> 50.315s
+Avg:    1.0063 s/batch
+Rate:   127.2 samples/s
+move_to_gpu=True, device=cuda

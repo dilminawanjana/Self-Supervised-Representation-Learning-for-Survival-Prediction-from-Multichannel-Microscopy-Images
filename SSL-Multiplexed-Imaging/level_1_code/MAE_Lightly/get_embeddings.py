@@ -2,17 +2,13 @@ from pathlib import Path
 import numpy as np
 
 from tqdm.auto import tqdm
-
 from sklearn.preprocessing import normalize
 
-import pytorch_lightning as pl
 import torch
 import torchvision
-
 from lightly.data import LightlyDataset
 
 import chunked_h5_dataset
-
 from main import MAE
 
 import argparse
@@ -43,9 +39,11 @@ def get_embeddings(args, weightp):
         num_workers=args.num_workers,
     )
     
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MAE.load_from_checkpoint(weightp)
+    model = model.to(device)
     model.eval()
-    
+        
     """Generates representations for all images in the dataloader with
     the given model
     """
@@ -60,7 +58,7 @@ def get_embeddings(args, weightp):
                 views, fnames = batch
                 
             img = views[0] if isinstance(views, (list, tuple)) else views
-            img = img.to(model.device)
+            img = img.to(device)
             emb = model.backbone(img).flatten(start_dim=1)
             embeddings.append(emb.cpu())
             filenames.extend(fnames)
@@ -72,22 +70,42 @@ def get_embeddings(args, weightp):
     np.save(args.save_dir / f'names_{weightp.stem}.npy', filenames)
     
     print('ALL DONE!')
-    
+
+ 
 def main(args):
     ckpt_path = Path(args.checkpoint_path)
 
-    # allow passing either a single ckpt file or a directory of ckpts
+    # exact checkpoints you want
+    wanted_names = [
+        "epochepoch=0099-v1.ckpt",
+        "epochepoch=0199-v1.ckpt",
+        "epochepoch=0299-v1.ckpt",
+        "epochepoch=0399.ckpt",
+        "epochepoch=0499.ckpt",
+    ]
+
     if ckpt_path.is_file():
         weight_list = [ckpt_path]
     else:
-        weight_list = sorted(ckpt_path.glob("*.ckpt"))
+        weight_list = [ckpt_path / name for name in wanted_names]
 
-    print(weight_list)
+        # check missing files
+        missing = [p for p in weight_list if not p.exists()]
+        if missing:
+            print("These checkpoints were not found:")
+            for p in missing:
+                print(" ", p)
+            raise FileNotFoundError("Some requested checkpoints are missing.")
+
+    print("Selected checkpoints:")
+    for p in weight_list:
+        print(" ", p.name)
 
     args.save_dir.mkdir(parents=True, exist_ok=True)
     for weightp in weight_list:
         get_embeddings(args, weightp)
-    
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Argument Parser for your script')
     
@@ -96,7 +114,7 @@ def parse_arguments():
     parser.add_argument('--lr', type=float, default=6e-2, help='Learning rate (default: 6e-2)')
     parser.add_argument('--mask_ratio', type=float, default=0.75, help='Momentum (default: 0.9)')
     
-    parser.add_argument('--input_size', type=int, default=256, help='Input size (default: 256)')
+    parser.add_argument('--input_size', type=int, default=224, help='Input size (default: 224)')
     parser.add_argument('--batch_size', type=int, default=128, help='Batch size for training (default: 128)')
     
     parser.add_argument('--dataset', type=str, default='', help='Name of the dataset')

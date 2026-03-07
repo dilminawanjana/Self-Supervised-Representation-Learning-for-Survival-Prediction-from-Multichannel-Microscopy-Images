@@ -36,8 +36,8 @@ class PatchEmbed(nn.Module):
         self.patch_size = patch_size
         self.num_patches = num_patches
 
-        self.proj = nn.Conv1d(768, embed_dim, kernel_size=patch_size, stride=patch_size)
-        # self.proj = nn.Conv2d(args.n_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
+        #self.proj = nn.Conv1d(768, embed_dim, kernel_size=patch_size, stride=patch_size)
+        self.proj = nn.Conv2d(args.n_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
 
     def forward(self, x):
         # B, C, HW = x.shape
@@ -65,15 +65,15 @@ class DINO(pl.LightningModule):
         input_dim = backbone.embed_dim
 
         self.student_backbone = backbone
+        #self.student_head = DINOProjectionHead(
+             #input_dim, 512, 64, 2048, freeze_last_layer=1
+        # )
         self.student_head = DINOProjectionHead(
-             input_dim, 512, 64, 2048, freeze_last_layer=1
-         )
-        # self.student_head = DINOProjectionHead(
-         #   input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim, freeze_last_layer=1
-        #)
+            input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim, freeze_last_layer=1
+        )
         self.teacher_backbone = copy.deepcopy(backbone)
-        self.teacher_head = DINOProjectionHead(input_dim, 512, 64, 2048)
-        # self.teacher_head = DINOProjectionHead(input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim)
+        #self.teacher_head = DINOProjectionHead(input_dim, 512, 64, 2048)
+        self.teacher_head = DINOProjectionHead(input_dim, self.hidden_dim, self.bottleneck_dim, self.output_dim)
         deactivate_requires_grad(self.teacher_backbone)
         deactivate_requires_grad(self.teacher_head)
 
@@ -172,7 +172,7 @@ def main(args):
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.output_dir,
         filename='{epoch}',
-        every_n_epochs=10,
+        every_n_epochs=25,
         save_last=True,
         save_top_k = -1
     )

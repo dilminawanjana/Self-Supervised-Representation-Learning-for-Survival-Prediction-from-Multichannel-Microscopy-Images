@@ -1,0 +1,17 @@
+Namespace(num_workers=7, max_epochs=100, lr=0.001, mask_ratio=0.75, input_size=224, batch_size=128, dataset='', data_path='/proj/berzelius-2025-315/users/x_dilwi/SSL_method/patches_542_h5_lzf/patches_542_lzf', checkpoint_path='/proj/berzelius-2025-315/users/x_dilwi/SSL_method/results/mae_local_run1_lr0.001_epochs500', save_dir=PosixPath('/proj/berzelius-2025-315/users/x_dilwi/SSL_method/results/mae_local_run1_lr0.001_epochs500/selected_embeddings'))
+Selected checkpoints:
+  epochepoch=0049-v1.ckpt
+  epochepoch=0099-v1.ckpt
+  epochepoch=0199-v1.ckpt
+  epochepoch=0399.ckpt
+  epochepoch=0499.ckpt
+Loaded dataset with length: 89430
+ALL DONE!
+Loaded dataset with length: 89430
+ALL DONE!
+Loaded dataset with length: 89430
+ALL DONE!
+Loaded dataset with length: 89430
+ALL DONE!
+Loaded dataset with length: 89430
+ALL DONE!

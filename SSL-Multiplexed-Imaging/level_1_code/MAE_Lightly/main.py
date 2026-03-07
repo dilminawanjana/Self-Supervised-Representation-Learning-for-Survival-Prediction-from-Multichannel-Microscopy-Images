@@ -149,6 +149,9 @@ def main(args):
         shuffle=True,
         drop_last=True,
         num_workers=args.num_workers,
+        pin_memory=True,
+        persistent_workers=(args.num_workers > 0),
+        prefetch_factor=2 if args.num_workers > 0 else None
     )
     
 
@@ -172,8 +175,8 @@ def main(args):
     
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.output_dir,
-        filename='{epoch}',
-        every_n_epochs=10,
+        filename='epoch{epoch:04d}',
+        every_n_epochs=2,
         save_last=True,
         save_top_k = -1
     )
