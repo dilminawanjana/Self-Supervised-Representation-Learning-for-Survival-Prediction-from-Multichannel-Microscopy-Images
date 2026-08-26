@@ -5,5 +5,5 @@ Instead of relying primarily on cell segmentation and handcrafted single-cell fe
 
 1. G. Atarsaikhan, I. Mogollon, K. Välimäki, T. Mirtti, T. Pellinen, and L. Paavolainen, “Self-supervised learning enables unbiased patient characterization from multiplexed cancer tissue microscopy images,” bioRxiv, 2025.
 2. M. Shaban, Y. Chang et al., “A foundation model for spatial proteomics,” 2025, https://github.com/mahmoodlab/KRONOS. [Online]. Available: https://arxiv.org/html/2506.03373v1
-3. W. Lian, P. Micke, J. Lindblad, and N. Sladoje, “Isolated channel vision transformers: From single-channel pretraining to multi-channel finetuning,” 2025. [Online]. Available: https://arxiv.org/abs/2503.09826
+
 
