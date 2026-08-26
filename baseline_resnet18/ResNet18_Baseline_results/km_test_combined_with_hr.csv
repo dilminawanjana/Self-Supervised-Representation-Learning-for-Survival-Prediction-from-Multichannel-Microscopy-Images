@@ -1,0 +1,2 @@
+split,n_patients,n_low,n_high,events_low,events_high,median_risk_cutoff,hr_high_vs_low,hr_ci_lower,hr_ci_upper,cox_p,logrank_p
+test,297,148,149,95,112,-0.029612204,1.2704984154004473,0.9670084340313547,1.6692369649825711,0.08560110094046881,0.08578569417871953

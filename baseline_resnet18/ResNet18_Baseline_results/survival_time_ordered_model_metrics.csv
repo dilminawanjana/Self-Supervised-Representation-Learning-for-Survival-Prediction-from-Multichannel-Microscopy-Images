@@ -1,0 +1,2 @@
+n_patients,n_events,c_index,spearman_time_vs_risk,spearman_p,median_z_risk_cutoff,n_low,n_high,events_low,events_high,hr_high_vs_low,hr_ci_lower,hr_ci_upper,cox_p,logrank_p
+297,207,0.5603950237270745,-0.14177302510227693,0.01447185229584204,0.16687685,148,149,88,119,1.6051692884173816,1.216579130806297,2.117879864313243,0.0008193639266206001,0.0007187043484085211
