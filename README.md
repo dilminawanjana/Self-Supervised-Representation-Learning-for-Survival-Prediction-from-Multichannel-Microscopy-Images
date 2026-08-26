@@ -1,10 +1,14 @@
 # Self-Supervised Representation Learning for Survival Prediction from Multichannel Microscopy Images of Cancer Tissue 
 
+> 📄 The full thesis can be read [here](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-593914).
+
 ## Overview
 
 This project investigates whether multichannel multiplexed immunofluorescence (mIF) microscopy images can be used to predict survival outcomes in non-small cell lung cancer (NSCLC) patients. The focus is on capturing patterns within the tumor microenvironment (TME) — not only at the single-cell level, but also across the broader spatial context of the tissue.
 
 Rather than relying primarily on cell segmentation and handcrafted single-cell features, this project evaluates state-of-the-art self-supervised learning (SSL) approaches and foundation models capable of learning meaningful representations from multichannel images with minimal annotation.
+
+http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-593914
 
 ## Abstract
 
